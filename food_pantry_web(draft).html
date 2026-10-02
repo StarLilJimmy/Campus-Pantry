@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Pantry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     EDIT ME: Pantry hours
+     Days use 24-hour "HH:MM" time. A day with start === end
+     ("00:00","00:00") is treated as closed.
+     ============================================================ */
+
+  /* (This block is CSS, the actual data lives in the <script> at
+     the bottom of the file — look for "EDIT ME" comments there.) */
+
+  :root{
+    --green-deep:   #2F4F3E;
+    --green-mid:    #4C7A62;
+    --sage:         #AFC3B3;
+    --gold:         #C9A227;
+    --gold-soft:    #E8D8A0;
+    --cream:        #FAF7F0;
+    --paper:        #FFFFFF;
+    --ink:          #26251F;
+    --ink-soft:     #5B5A50;
+    --line:         #E3DECE;
+
+    --font-head: "Fraunces", serif;
+    --font-body: "Work Sans", sans-serif;
+
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ color: inherit; }
+
+  .wrap{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---------- Nav ---------- */
+
+  header{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250,247,240,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+  }
+
+  .brand{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.35rem;
+    color: var(--green-deep);
+    text-decoration: none;
+  }
+
+  .brand .mark{
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: var(--green-deep);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-soft);
+    font-size: 1rem;
+    flex: none;
+  }
+
+  .navlinks{
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+
+  .navlinks a{
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+  }
+
+  .navlinks a:hover{
+    color: var(--green-deep);
+    border-bottom-color: var(--gold);
+  }
+
+  .navtoggle{ display: none; }
+
+  @media (max-width: 760px){
+    .navlinks{
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      flex-direction: column;
+      gap: 0;
+      display: none;
+      padding: 6px 28px 14px;
+    }
+    .navlinks.open{ display: flex; }
+    .navlinks a{ padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .navtoggle{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero{
+    padding: 76px 0 64px;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  @media (max-width: 760px){
+    .hero{ grid-template-columns: 1fr; padding: 48px 0 40px; }
+  }
+
+  .eyebrow{
+    color: var(--green-mid);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+  }
+
+  h1{
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 4.4vw, 3.1rem);
+    line-height: 1.12;
+    margin: 0 0 20px;
+    color: var(--green-deep);
+    letter-spacing: -0.01em;
+  }
+
+  .hero p.lede{
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    max-width: 46ch;
+    margin: 0 0 30px;
+  }
+
+  .cta-row{ display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.97rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  .btn-primary{ background: var(--green-deep); color: var(--cream); }
+  .btn-primary:hover{ background: #263f32; }
+
+  .btn-ghost{ background: transparent; color: var(--green-deep); border-color: var(--green-deep); }
+  .btn-ghost:hover{ background: rgba(47,79,62,0.07); }
+
+  .hero-card{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 26px;
+  }
+
+  .status-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .status-dot{
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: #9A9A8C;
+    flex: none;
+  }
+
+  .status-dot.open{ background: #3E8E5A; }
+  .status-dot.closed{ background: #B9513F; }
+
+  .status-text{ font-weight: 600; font-size: 1.05rem; }
+
+  .status-sub{ color: var(--ink-soft); font-size: 0.92rem; margin: 0 0 18px; }
+
+  .hero-card h3{
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: var(--green-deep);
+  }
+
+  .hours-mini{ list-style: none; margin: 0; padding: 0; font-size: 0.92rem; }
+  .hours-mini li{
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+  .hours-mini li:first-child{ border-top: none; }
+  .hours-mini li.today{ color: var(--ink); font-weight: 600; }
+
+  /* ---------- Section shell ---------- */
+
+  section{ padding: 60px 0; border-top: 1px solid var(--line); }
+
+  .section-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    margin-bottom: 34px;
+    flex-wrap: wrap;
+  }
+
+  .section-head h2{
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    margin: 0;
+    color: var(--green-deep);
+  }
+
+  .section-head p{
+    color: var(--ink-soft);
+    margin: 6px 0 0;
+    max-width: 50ch;
+  }
+
+  /* ---------- Hours table ---------- */
+
+  .hours-grid{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+
+  @media (max-width: 760px){
+    .hours-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .day-card{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    text-align: center;
+  }
+
+  .day-card.today{ border-color: var(--green-mid); box-shadow: inset 0 0 0 1px var(--green-mid); }
+
+  .day-name{ font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
+  .day-time{ font-size: 0.85rem; color: var(--ink-soft); }
+  .day-time.closed{ color: #B9513F; }
+
+  /* ---------- Inventory ---------- */
+
+  .inv-tabs{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+
+  .inv-tab{
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+
+  .inv-tab.active{
+    background: var(--green-deep);
+    border-color: var(--green-deep);
+    color: var(--cream);
+  }
+
+  .inv-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .inv-item{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .inv-item-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .inv-item h4{
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 600;
+  }
+
+  .stock{
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .stock.good{ background: #E2EFE4; color: #2E6B45; }
+  .stock.limited{ background: var(--gold-soft); color: #7A5E12; }
+  .stock.low{ background: #F3DEDA; color: #A8402E; }
+
+  .inv-item p{ margin: 0; color: var(--ink-soft); font-size: 0.88rem; }
+
+  /* ---------- How it works ---------- */
+
+  .steps{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    counter-reset: step;
+  }
+
+  @media (max-width: 760px){
+    .steps{ grid-template-columns: 1fr 1fr; }
+  }
+
+  .step{ position: relative; padding-left: 2px; }
+
+  .step-num{
+    font-family: var(--font-head);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .step h4{ margin: 0 0 6px; font-size: 1rem; }
+  .step p{ margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+
+  /* ---------- Visit / contact ---------- */
+
+  .visit{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  @media (max-width: 760px){ .visit{ grid-template-columns: 1fr; } }
+
+  .fact{
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .fact .ico{
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: var(--green-deep);
+    color: var(--gold-soft);
+    display: flex; align-items: center; justify-content: center;
+    flex: none;
+    font-size: 1rem;
+  }
+
+  .fact h4{ margin: 0 0 3px; font-size: 0.95rem; }
+  .fact p{ margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+
+  .note-card{
+    background: var(--green-deep);
+    color: var(--cream);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .note-card h3{
+    font-family: var(--font-head);
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+
+  .note-card p{ color: var(--sage); margin: 0 0 18px; font-size: 0.95rem; }
+
+  .note-card .btn-primary{ background: var(--gold); color: #2B2305; }
+  .note-card .btn-primary:hover{ background: #B99214; }
+
+  /* ---------- Footer ---------- */
+
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 26px 0;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#top">
+        <span class="mark">&#127811;</span>
+        Campus Pantry
+      </a>
+      <button class="navtoggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+            <ul class="navlinks" id="navLinks">
+        <li><a href="#hours">Hours</a></li>
+        <li><a href="#inventory">What's In Stock</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#visit">Visit Us</a></li>
+        <li><a href="https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fudc.iad1.qualtrics.com%2Fjfe%2Fform%2FSV_bEGoadGF0PFKEbs&data=05%7C02%7Cavanti.watson%40udc.edu%7C55b708af0e7145ff72c008df20cb0098%7Ca31211ef14214193bf151d613b2546f2%7C0%7C0%7C639265728542650345%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=9ZVcJAaEaz9gmDpyXMEsIlII%2BMi98JpDhejaqDDTX8A%3D&reserved=0" target="_blank" rel="noopener" style="color: var(--green-deep); font-weight:700;">Sign Up</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div id="top"></div>
+
+<section class="hero" style="border-top:none; padding-top:76px;">
+  <div class="wrap" style="display:grid; grid-template-columns: 1.15fr 0.85fr; gap:48px; align-items:center;">
+    <div>
+      <div class="eyebrow">A resource for every student, no questions asked</div>
+      <h1>Food shouldn't be a barrier to class.</h1>
+      <p class="lede">The Campus Pantry is free and confidential for all currently enrolled students. Stop by during open hours — no ID check, no appointment, no explanation needed.</p>
+            <div class="cta-row">
+        <a class="btn btn-primary" href="#hours">See today's hours</a>
+        <a class="btn btn-ghost" href="#inventory">Browse what's in stock</a>
+        <a class="btn btn-primary" href="https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fudc.iad1.qualtrics.com%2Fjfe%2Fform%2FSV_bEGoadGF0PFKEbs&data=05%7C02%7Cavanti.watson%40udc.edu%7C55b708af0e7145ff72c008df20cb0098%7Ca31211ef14214193bf151d613b2546f2%7C0%7C0%7C639265728542650345%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=9ZVcJAaEaz9gmDpyXMEsIlII%2BMi98JpDhejaqDDTX8A%3D&reserved=0" target="_blank" rel="noopener">Sign up now</a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="status-row">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Checking hours…</span>
+      </div>
+      <p class="status-sub" id="statusSub"></p>
+      <h3>This week</h3>
+      <ul class="hours-mini" id="hoursMini"></ul>
+    </div>
+  </div>
+</section>
+
+<section id="hours">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>Hours of operation</h2>
+        <p>Hours can shift around exams and breaks — check back before finals week.</p>
+      </div>
+    </div>
+    <div class="hours-grid" id="hoursGrid"></div>
+  </div>
+</section>
+
+<section id="inventory">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>What's in stock</h2>
+        <p>Updated by pantry volunteers. "Limited" means we have some, but not a full supply — grab it while you can.</p>
+      </div>
+    </div>
+    <div class="inv-tabs" id="invTabs"></div>
+    <div class="inv-grid" id="invGrid"></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>How a visit works</h2>
+        <p>It takes less time than buying coffee.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h4>Walk in during open hours</h4>
+        <p>Sign-up is required to enter pantry, no referral letter. Just show up.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h4>Bring a bag</h4>
+        <p>Gloves are provided once you enter — take what you'll actually use.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h4>Take what you need</h4>
+        <p>There's no limit beyond being considerate of other students.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <h4>That's it</h4>
+        <p>No check-out process. No one asks why you're here.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="visit">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>Visit us</h2>
+      </div>
+    </div>
+    <div class="visit">
+      <div>
+        <div class="fact">
+          <span class="ico">&#128205;</span>
+          <div>
+            <h4>Location</h4>
+            <p>Room 118, Building 71</p>
+          </div>
+        </div>
+        <div class="fact">
+          <span class="ico">&#9993;</span>
+          <div>
+            <h4>Email</h4>
+            <p>pantry@yourschool.edu</p>
+          </div>
+        </div>
+        <div class="fact">
+          <span class="ico">&#128100;</span>
+          <div>
+            <h4>Who can come</h4>
+            <p>Any currently enrolled student and registered for the pantry for this current semester.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <h3>Want to help stock the shelves?</h3>
+        <p>We always need volunteers for restocking shifts and food drives — no experience needed, just an hour or two.</p>
+        <a class="btn btn-primary" href="mailto:pantry@yourschool.edu">Email to volunteer</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; width:100%;">
+    <span>Campus Pantry · Building 71, Room 118</span>
+    <span>Everything here stays between you and the pantry.</span>
+  </div>
+</footer>
+
+<script>
+
+  /* ============================================================
+     EDIT ME #1: WEEKLY HOURS
+     Use 24-hour "HH:MM" time. Set open === close (e.g. "00:00",
+     "00:00") to mark a day fully closed.
+     ============================================================ */
+  const HOURS = [
+    { day: "Sunday",    open: "00:00", close: "00:00" },
+    { day: "Monday",    open: "12:00", close: "19:00" },
+    { day: "Tuesday",   open: "11:00", close: "19:00" },
+    { day: "Wednesday", open: "14:00", close: "19:00" },
+    { day: "Thursday",  open: "11:00", close: "19:00" },
+    { day: "Friday",    open: "11:00", close: "17:00" },
+    { day: "Saturday",  open: "00:00", close: "00:00" },
+  ];
+
+  /* ============================================================
+     EDIT ME #2: INVENTORY
+     category must match one of the CATEGORIES below.
+     stock must be exactly: "good", "limited", or "low"
+     ============================================================ */
+  const CATEGORIES = ["Produce", "Pantry Staples", "Proteins", "Personal Care"];
+
+  const ITEMS = [
+    { name: "Canned black beans",     category: "Pantry Staples", stock: "good" },
+    { name: "White rice (2 lb bags)", category: "Pantry Staples", stock: "good" },
+    { name: "Pasta",                  category: "Pantry Staples", stock: "good" },
+    { name: "Peanut butter",          category: "Pantry Staples", stock: "limited" },
+    { name: "Cereal",                 category: "Pantry Staples", stock: "good" },
+
+    { name: "Apples",                 category: "Produce", stock: "good" },
+    { name: "Carrots",                category: "Produce", stock: "good" },
+    { name: "Onions",                 category: "Produce", stock: "limited" },
+    { name: "Bananas",                category: "Produce", stock: "low" },
+
+    { name: "Canned tuna",            category: "Proteins", stock: "good" },
+    { name: "Canned chicken",         category: "Proteins", stock: "limited" },
+    { name: "Eggs",                   category: "Proteins", stock: "low" },
+    { name: "Tofu",                   category: "Proteins", stock: "limited" },
+
+    { name: "Toothpaste",             category: "Personal Care", stock: "good" },
+    { name: "Shampoo",                category: "Personal Care", stock: "limited" },
+    { name: "Laundry detergent pods", category: "Personal Care", stock: "low" },
+    { name: "Menstrual products",     category: "Personal Care", stock: "good" },
+  ];
+
+  /* ============================================================
+     Below this line is layout logic — you shouldn't need to
+     touch it just to update hours or inventory.
+     ============================================================ */
+
+  const STOCK_LABEL = { good: "Well stocked", limited: "Limited", low: "Low stock" };
+
+  function toMinutes(hhmm){
+    const [h, m] = hhmm.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  function fmt(hhmm){
+    const [h, m] = hhmm.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const h12 = ((h + 11) % 12) + 1;
+    return m === 0 ? `${h12} ${period}` : `${h12}:${String(m).padStart(2,"0")} ${period}`;
+  }
+
+  function renderStatusAndHours(){
+    const now = new Date();
+    const todayIdx = now.getDay(); // 0 = Sunday
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+
+    const hoursMini = document.getElementById("hoursMini");
+    const hoursGrid = document.getElementById("hoursGrid");
+    hoursMini.innerHTML = "";
+    hoursGrid.innerHTML = "";
+
+    HOURS.forEach((d, idx) => {
+      const closed = d.open === d.close;
+      const isToday = idx === todayIdx;
+
+      const li = document.createElement("li");
+      if (isToday) li.classList.add("today");
+      li.innerHTML = `<span>${d.day}</span><span>${closed ? "Closed" : fmt(d.open) + " – " + fmt(d.close)}</span>`;
+      hoursMini.appendChild(li);
+
+      const card = document.createElement("div");
+      card.className = "day-card" + (isToday ? " today" : "");
+      card.innerHTML = `
+        <div class="day-name">${d.day.slice(0,3)}</div>
+        <div class="day-time ${closed ? "closed" : ""}">${closed ? "Closed" : fmt(d.open) + "–" + fmt(d.close)}</div>
+      `;
+      hoursGrid.appendChild(card);
+    });
+
+    const today = HOURS[todayIdx];
+    const closedToday = today.open === today.close;
+    const isOpenNow = !closedToday && nowMin >= toMinutes(today.open) && nowMin < toMinutes(today.close);
+
+    const dot = document.getElementById("statusDot");
+    const text = document.getElementById("statusText");
+    const sub = document.getElementById("statusSub");
+
+    if (isOpenNow){
+      dot.className = "status-dot open";
+      text.textContent = "Open now";
+      sub.textContent = `Closes today at ${fmt(today.close)}`;
+    } else {
+      dot.className = "status-dot closed";
+      text.textContent = "Closed right now";
+      // find the next open day
+      let found = null;
+      for (let i = 1; i <= 7; i++){
+        const idx = (todayIdx + i) % 7;
+        const d = HOURS[idx];
+        if (d.open !== d.close){ found = d; break; }
+      }
+      sub.textContent = found ? `Opens ${found.day} at ${fmt(found.open)}` : "Check back soon";
+    }
+  }
+
+  function renderInventory(activeCategory){
+    const tabs = document.getElementById("invTabs");
+    const grid = document.getElementById("invGrid");
+    tabs.innerHTML = "";
+    grid.innerHTML = "";
+
+    const allTab = document.createElement("button");
+    allTab.className = "inv-tab" + (activeCategory === "All" ? " active" : "");
+    allTab.textContent = "All";
+    allTab.onclick = () => renderInventory("All");
+    tabs.appendChild(allTab);
+
+    CATEGORIES.forEach(cat => {
+      const tab = document.createElement("button");
+      tab.className = "inv-tab" + (activeCategory === cat ? " active" : "");
+      tab.textContent = cat;
+      tab.onclick = () => renderInventory(cat);
+      tabs.appendChild(tab);
+    });
+
+    const items = activeCategory === "All" ? ITEMS : ITEMS.filter(i => i.category === activeCategory);
+
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "inv-item";
+      card.innerHTML = `
+        <div class="inv-item-top">
+          <h4>${item.name}</h4>
+          <span class="stock ${item.stock}">${STOCK_LABEL[item.stock]}</span>
+        </div>
+        <p>${item.category}</p>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  document.getElementById("navToggle").addEventListener("click", () => {
+    document.getElementById("navLinks").classList.toggle("open");
+  });
+
+  renderStatusAndHours();
+  renderInventory("All");
+
+</script>
+
+</body>
+</html>
